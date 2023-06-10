@@ -62,7 +62,7 @@
                     <p style="display:none" name="hiddenId">{{ basketValue.id }}</p>
                     <div class="d-flex cart-item-count-div">
                       <span class="add">+</span>
-                      <span class="number">{{  basketValue.count}}</span>
+                      <span class="number">{{ basketValue.count}}</span>
                       <span class="minus">-</span>
                     </div>
                   </div>
@@ -168,10 +168,11 @@ export default {
   setup() {
     const emitter = inject("emitter"); // Inject `emitter`\
     const basketValues = ref([]);
-    emitter.on("basket", value => {
+    emitter.on("basketItem", val => {
       // *Listen* for event
+      searchToAddBasket(val.value);
       //console.log("myevent received!", `value: ${value}`);
-      basketValues.value = value;
+      //basketValues.value = value;
       //console.log(basket.value[0].name)
     });
 
@@ -188,8 +189,38 @@ export default {
         return id[+w];
       });
     }
-    
-    return { basketValues,toFarsiAndComma };
+
+    function searchToAddBasket(value) {
+      var targetValue = value;
+      var basketArray = basketValues.value;
+      var x = {};
+      for (var j = 0; j < basketArray.length; j++) {
+        if (targetValue.id == basketArray[j].id) {
+          x = {
+            name: basketArray[j].name,
+            price: basketArray[j].price,
+            imgSrc: basketArray[j].imgSrc,
+            id: basketArray[j].id,
+            count: Number(basketArray[j].count) + 1
+          };
+          basketValues.value[j].count = Number(basketArray[j].count + 1);
+          return x;
+        }
+      }
+
+      x = {
+        name: targetValue.name,
+        price: targetValue.price,
+        imgSrc: targetValue.imgSrc,
+        id: targetValue.id,
+        count: 1
+      };
+      basketValues.value.push(x);
+
+      return x;
+    }
+
+    return { basketValues, toFarsiAndComma };
   }
 };
 </script>
@@ -197,8 +228,7 @@ export default {
 <style>
 @font-face {
   font-family: "iranyekan";
-  src: url("../libs/iranyekan-cufonfonts/Qs_Iranyekan.ttf")
-    format("truetype");
+  src: url("../libs/iranyekan-cufonfonts/Qs_Iranyekan.ttf") format("truetype");
 }
 
 :root {

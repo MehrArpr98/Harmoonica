@@ -115,7 +115,7 @@
 </template>
 
 <script>
-import { inject, reactive } from "vue";
+import { inject, reactive, ref } from "vue";
 import $ from "../libs/jquery/dist/jquery.min.js";
 
 export default {
@@ -123,7 +123,7 @@ export default {
     items: Array
   },
   setup(params) {
-    const basket = reactive([]);
+    const basketItem = ref({});
     const emitter = inject("emitter");
 
     function toFarsiAndComma(x) {
@@ -146,13 +146,32 @@ export default {
         event.preventDefault()
     } */
 
-    function searchToAdd(i) {
+    /* function searchToAdd(i) {
       for (var j = 0; j < params.items.length; j++) {
         if (i == params.items[j].id) {
           basket.push(params.items[j]);
         }
       }
+    } */
+    function searchToFind(i) {
+      for (var j = 0; j < params.items.length; j++) {
+        if (i == params.items[j].id) {
+          return params.items[j];
+        }
+      }
     }
+    
+
+           /*  function setBasketValuesIds() {
+                var arr = [];
+                //console.log('arr ',app.basketValues.length)
+                for (var j = 0; j < app.basketValues.length; j++) {
+                    arr[j] = (app.basketValues[j].id);
+                    //console.log('arr[j] ',arr[j])
+                }
+                $(".basket-values").val(arr)
+                window.localStorage.setItem("cart", JSON.stringify(arr));
+            } */
 
     function addBasket(e, id) {
       e.preventDefault();
@@ -166,9 +185,11 @@ export default {
       }
       basketNumber = basketNumber + 1;
       $(".basket-number").text(basketNumber);
-      searchToAdd(id);
 
-      emitter.emit("basket", basket);
+      //searchToAddBasket(id)
+      basketItem.value = searchToFind(id);
+
+      emitter.emit("basketItem", basketItem);
     }
 
     return { toFarsiAndComma, calculateRate, addBasket };
